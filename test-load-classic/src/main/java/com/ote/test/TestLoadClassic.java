@@ -46,6 +46,9 @@ class TestLoadRestController {
             case asynchronous:
                 function = this::callAsynchronous;
                 break;
+            case reactive:
+                function = this::callReactive;
+                break;
         }
 
         Metrics metrics = new Metrics(numThreads);
@@ -57,7 +60,7 @@ class TestLoadRestController {
     }
 
     enum Type {
-        synchronous, asynchronous
+        synchronous, asynchronous, reactive
     }
 
     private String callSynchronous(int index) {
@@ -74,13 +77,25 @@ class TestLoadRestController {
 
     private String callAsynchronous(int index) {
         try {
-        //    System.out.println("Call " + index);
+            //    System.out.println("Call " + index);
             return restTemplate.getForEntity("http://localhost:8080/test/async/" + index, String.class).getBody();
         } catch (Exception e) {
             e.printStackTrace();
             return "ERROR";
         } finally {
-        //    System.out.println("End " + index);
+            //    System.out.println("End " + index);
+        }
+    }
+
+    private String callReactive(int index) {
+        try {
+            //    System.out.println("Call " + index);
+            return restTemplate.getForEntity("http://localhost:8081/test/reactive/" + index, String.class).getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR";
+        } finally {
+            //    System.out.println("End " + index);
         }
     }
 }
