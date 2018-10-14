@@ -12,7 +12,6 @@
         <module>classic</module>
         <module>reactive</module>
         <module>test-load-classic</module>
-        <module>test-load-reactive</module>
     </modules>
 
     <properties>
