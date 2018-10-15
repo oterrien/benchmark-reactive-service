@@ -18,22 +18,3 @@ public class ReactiveMsApplication {
     }
 }
 
-@RestController
-class TestController {
-
-    @GetMapping("/test/reactive/{id}")
-    public Mono<String> getResult(@PathVariable("id") int id) throws Exception {
-        //System.out.println(id);
-        return Mono.fromCallable(() -> this.call(id)).subscribeOn(Schedulers.elastic());
-    }
-
-    private String call(int id) {
-        try {
-            TimeUnit.SECONDS.sleep(1);
-            return "SUCCESS-" + id;
-        } catch (Exception e) {
-            return "ERROR-" + id;
-        }
-    }
-
-}

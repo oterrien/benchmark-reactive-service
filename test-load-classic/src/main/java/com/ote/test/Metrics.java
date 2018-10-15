@@ -42,7 +42,7 @@ public class Metrics {
         metrics.add(metric);
     }
 
-    public void startAll() {
+    public void startAndWaitAll() {
         long beginTime = System.currentTimeMillis();
         CompletableFuture.allOf(metrics.parallelStream().map(Metric::start).toArray(CompletableFuture[]::new)).join();
         this.totalDuration = System.currentTimeMillis() - beginTime;
@@ -54,22 +54,16 @@ public class Metrics {
     }
 
     public double getMinDuration() {
-        return this.metrics.stream().filter(p -> p.getResult().contains("SUCCESS")).mapToLong(Metric::getDuration).min().orElse(-1);
+        return this.metrics.stream().mapToLong(Metric::getDuration).min().orElse(-1);
     }
 
     public double getMaxDuration() {
-        return this.metrics.stream().filter(p -> p.getResult().contains("SUCCESS")).mapToLong(Metric::getDuration).max().orElse(-1);
+        return this.metrics.stream().mapToLong(Metric::getDuration).max().orElse(-1);
     }
 
     public double getAverageDuration() {
-        return this.metrics.stream().filter(p -> p.getResult().contains("SUCCESS")).mapToLong(Metric::getDuration).average().orElse(-1);
+        return this.metrics.stream().mapToLong(Metric::getDuration).average().orElse(-1);
     }
 
-    public long getNumOfSuccess() {
-        return this.metrics.stream().filter(p -> p.getResult().contains("SUCCESS")).count();
-    }
 
-    public long getNumOfError() {
-        return this.metrics.stream().filter(p -> !p.getResult().contains("SUCCESS")).count();
-    }
 }
