@@ -1,9 +1,7 @@
 package com.ote.test;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
@@ -22,12 +20,12 @@ public class Metric {
     private final Type type;
 
     @JsonIgnore
-    private Function<Integer, String> function;
+    private Function<Integer, Status> function;
 
     @JsonIgnore
     private ExecutorService executorService;
 
-    private String result;
+    private Status result;
 
     @JsonIgnore
     private long beginTime;
@@ -35,7 +33,7 @@ public class Metric {
     @JsonIgnore
     private long endTime;
 
-    public Metric(int index, UUID uuid, Type type, Function<Integer, String> function, ExecutorService executorService) {
+    public Metric(int index, UUID uuid, Type type, Function<Integer, Status> function, ExecutorService executorService) {
         this(index, uuid, type);
         this.function = function;
         this.executorService = executorService;
@@ -50,7 +48,7 @@ public class Metric {
         }
     }
 
-    private Void end(String result) {
+    private Void end(Status result) {
         this.endTime = System.currentTimeMillis();
         this.result = result;
         return null;

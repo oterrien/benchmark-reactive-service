@@ -1,12 +1,12 @@
 package com.ote.test;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Integer> {
+public interface UserRepository extends MongoRepository<User, Long> {
 
-    Optional<UserEntity> findByIndex(int index);
+    Optional<User> findByName(String name);
 }

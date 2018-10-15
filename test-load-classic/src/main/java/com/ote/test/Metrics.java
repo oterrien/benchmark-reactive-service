@@ -37,7 +37,7 @@ public class Metrics {
         this.executorService = Executors.newFixedThreadPool(numThreads);
     }
 
-    public void newRequest(int threadNum, Function<Integer, String> function) {
+    public void newRequest(int threadNum, Function<Integer, Status> function) {
         Metric metric = new Metric(threadNum, this.uuid, this.type, function, executorService);
         metrics.add(metric);
     }
@@ -65,5 +65,8 @@ public class Metrics {
         return this.metrics.stream().mapToLong(Metric::getDuration).average().orElse(-1);
     }
 
+    public long getNumOfFailures(){
+        return this.metrics.stream().map(Metric::getResult).mapToInt(Status::getNumFailures).count();
+    }
 
 }
