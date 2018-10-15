@@ -24,8 +24,12 @@ public class TestController {
     @PostConstruct
     public void init() {
         Flux<User> users = Flux.fromStream(IntStream.range(0, 10).mapToObj(this::createUser));
-        userRepository.saveAll(users).then().publishOn(Schedulers.elastic());
-        log.warn("##### Num of elements: " + userRepository.count().block());
+        userRepository.saveAll(users).
+                then().
+                flatMap(v -> userRepository.count()).
+                then().
+                doFinally(v -> log.warn("##### Num of elements: " +v)).
+                publishOn(Schedulers.elastic());
     }
 
     private User createUser(long index) {
