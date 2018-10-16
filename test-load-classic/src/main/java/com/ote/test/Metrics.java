@@ -66,7 +66,7 @@ public class Metrics {
     }
 
     public long getNumOfFailures(){
-        return this.metrics.stream().map(Metric::getResult).mapToInt(Status::getNumFailures).count();
+        return this.metrics.stream().map(Metric::getResult).mapToLong(Status::getNumFailures).sum();
     }
 
 }

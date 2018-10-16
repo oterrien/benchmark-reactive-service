@@ -37,4 +37,9 @@ public class AverageKPI implements KPI {
     public long getNumOfFailures() {
         return Math.round(kpis.parallelStream().mapToLong(KPI::getNumOfFailures).average().orElse(-1));
     }
+
+    @Override
+    public String toString(){
+        return this.serialize();
+    }
 }
