@@ -1,52 +1,40 @@
 package com.ote.test;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @RestController
 @Slf4j
 public class TestLoadRestController {
 
-    @Autowired
-    private RestOperations restTemplate;
-
-    @GetMapping(value = "/test/{type}/{numThreads}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(value = "/test/{type}", produces = MediaType.TEXT_PLAIN_VALUE)
     public String test(@PathVariable("type") Type type,
-                       @PathVariable("numThreads") int numThreads) throws Exception {
+                       @RequestParam("numThreads") String numThreads) {
 
-        System.gc();
-        TimeUnit.SECONDS.sleep(1);
+        final UUID uuid = UUID.randomUUID();
+        try {
+            final Function<Integer, Status> function = type.getFunction();
 
-        UUID uuid = UUID.randomUUID();
+            log.info("# START CALL {}-------------------------------------------------------", uuid.toString());
 
-        log.info(String.format("# START CALL %s-------------------------------------------------------", uuid.toString()));
-
-        Function<Integer, Status> function = getFunction(type);
-        KPI kpi = executeTest(5, numThreads, type, uuid, function);
-        return kpi.serialize();
-    }
-
-    private Function<Integer, Status> getFunction(Type type) {
-        switch (type) {
-            case synchronous:
-                return this::callSynchronous;
-            case reactive:
-                return this::callReactive;
-            default:
-                throw new IllegalArgumentException("Type " + type + " is not known");
+            return Stream.of(numThreads.split(",")).
+                    mapToInt(Integer::parseInt).
+                    mapToObj(i -> executeTest(2, i, type, uuid, function).serialize()).
+                    collect(Collectors.joining(""));
+        } finally {
+            log.info("# END CALL {}-------------------------------------------------------", uuid.toString());
         }
     }
 
@@ -54,7 +42,7 @@ public class TestLoadRestController {
 
         List<KPI> kpis = new ArrayList<>(numOfShoot);
         IntStream.range(0, numOfShoot).forEach(i -> kpis.add(executeTest(numThreads, type, uuid, function)));
-        return new AverageKPI(kpis);
+        return new MinKPI(kpis);
     }
 
     private KPI executeTest(int numThreads, Type type, UUID uuid, Function<Integer, Status> function) {
@@ -70,33 +58,5 @@ public class TestLoadRestController {
         long numOfFailures = Math.round(metrics.getNumOfFailures());
 
         return new SingleKPI(numThreads, min, average, max, total, numOfFailures);
-    }
-
-    private Status callSynchronous(int index) {
-        return call(index, (idx) -> restTemplate.
-                getForEntity("http://localhost:8080/test/" + index, String.class).
-                getBody());
-    }
-
-    private Status callReactive(int index) {
-        return call(index, (idx) -> WebClient.
-                create("http://localhost:8081/test/" + index).
-                get().
-                retrieve().
-                bodyToMono(String.class).
-                block());
-    }
-
-    private Status call(int index, Function<Integer, String> function) {
-        Status status = new Status();
-        do {
-            status.incrementLoop();
-            try {
-                status.setResult(function.apply(index));
-            } catch (Exception e) {
-                status.setResult("ERROR-" + index);
-            }
-        } while (!status.isSuccess());
-        return status;
     }
 }

@@ -15,7 +15,7 @@ public interface KPI {
     long getNumOfFailures();
 
     default String serialize(){
-        return String.format("%d;%d;%d;%d;%d;%d", getNumOfThreads(), getMin(), getAverage(), getMax(), getTotal(), getNumOfFailures());
+        return String.format("%d;%d;%d;%d;%d;%d\n", getNumOfThreads(), getMin(), getAverage(), getMax(), getTotal(), getNumOfFailures());
     }
 }
 

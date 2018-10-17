@@ -5,17 +5,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.config.EnableWebFlux;
 
 @SpringBootApplication
-public class SpringBootAppRunner {
+@EnableWebFlux
+public class LoadTesterAppRunner {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootAppRunner.class, args);
-    }
-
-    @Bean
-    public RestOperations restTemplate() {
-        return new RestTemplate();
+        SpringApplication.run(LoadTesterAppRunner.class, args);
     }
 }
 

@@ -3,10 +3,9 @@ package com.ote.test;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class AverageKPI implements KPI {
+public class MinKPI implements KPI {
     private final List<KPI> kpis;
 
     @Override
@@ -16,22 +15,22 @@ public class AverageKPI implements KPI {
 
     @Override
     public long getMin() {
-        return Math.round(kpis.parallelStream().mapToLong(KPI::getMin).average().orElse(-1));
+        return Math.round(kpis.parallelStream().mapToLong(KPI::getMin).min().orElse(-1));
     }
 
     @Override
     public long getMax() {
-        return Math.round(kpis.parallelStream().mapToLong(KPI::getMax).average().orElse(-1));
+        return Math.round(kpis.parallelStream().mapToLong(KPI::getMax).min().orElse(-1));
     }
 
     @Override
     public long getAverage() {
-        return Math.round(kpis.parallelStream().mapToLong(KPI::getAverage).average().orElse(-1));
+        return Math.round(kpis.parallelStream().mapToLong(KPI::getAverage).min().orElse(-1));
     }
 
     @Override
     public long getTotal() {
-        return Math.round(kpis.parallelStream().mapToLong(KPI::getTotal).average().orElse(-1));
+        return Math.round(kpis.parallelStream().mapToLong(KPI::getTotal).min().orElse(-1));
     }
 
     @Override

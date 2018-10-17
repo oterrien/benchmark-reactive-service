@@ -2,3 +2,7 @@ server.port: 8080
 
 server.tomcat.max-connections: 1000
 server.tomcat.max-threads: 20
+
+#management.metrics:
+#  export.datadog.enabled: false
+#  use-global-registry: false

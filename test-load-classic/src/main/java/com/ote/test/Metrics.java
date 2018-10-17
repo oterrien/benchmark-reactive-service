@@ -44,7 +44,7 @@ public class Metrics {
 
     public void startAndWaitAll() {
         long beginTime = System.currentTimeMillis();
-        CompletableFuture.allOf(metrics.parallelStream().map(Metric::start).toArray(CompletableFuture[]::new)).join();
+        CompletableFuture.allOf(metrics.stream().map(Metric::start).toArray(CompletableFuture[]::new)).join();
         this.totalDuration = System.currentTimeMillis() - beginTime;
         executorService.shutdownNow();
     }
